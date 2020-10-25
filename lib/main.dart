@@ -28,11 +28,17 @@ class Home extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.black87,
-          title: Text("Relogio"),
-          bottom: TabBar(isScrollable: true, tabs: [
-            Tab(icon: Icon(Icons.timer), text: "CRONÔMETRO"),
-            Tab(icon: Icon(Icons.av_timer), text: "TEMPORIZADOR")
-          ]),
+          title: Text("FlutTimer"),
+          bottom: TabBar(
+            isScrollable: true, 
+            labelColor: Colors.green,
+            unselectedLabelColor:  Colors.white70,
+            indicatorColor: Colors.green,
+            labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w600),
+            tabs: [
+              Tab(text: "CRONÔMETRO", ),
+              Tab(text: "TEMPORIZADOR")
+            ]),
         ),
         body: TabBarView(children: [StopWatch(), CountDown()]),
       ),
