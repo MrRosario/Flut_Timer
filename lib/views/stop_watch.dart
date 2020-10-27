@@ -27,9 +27,12 @@ class _StopWatchState extends State<StopWatch> {
 
     setState(() {
       seg++;
-      if(seg == 60){
+      
+      if(seg > 59){
+        seg = 0;
         min += 1;
-      }
+      } 
+      
     });
     print('Minuts: $min');
     print('Seconds: $seg');
