@@ -17,25 +17,29 @@ class _StopWatchState extends State<StopWatch> {
   String _stopLabel =  "PARAR";
   
   int min = 0;
-  int seg = 0;
-  
+  int sec = 0;
+  int milsec = 0;
 
   void _startTime() {
 
     min %= 60;
-    seg %= 60;
+    sec %= 60;
+    milsec %= 100;
 
     setState(() {
-      seg++;
+      milsec++;
       
-      if(seg > 59){
-        seg = 0;
+      if(milsec > 99){
+        milsec = 0;
+        sec += 1;
+      }
+
+      if(sec > 59){
+        sec = 0;
         min += 1;
       } 
       
     });
-    print('Minuts: $min');
-    print('Seconds: $seg');
   }
 
   void _restartTime(){
@@ -44,7 +48,8 @@ class _StopWatchState extends State<StopWatch> {
     
     setState(() {
       min = 0;
-      seg = 0;
+      sec = 0;
+      milsec = 0;
 
       _stopLabel = "PARAR";
       redClr = Colors.red;
@@ -65,7 +70,7 @@ class _StopWatchState extends State<StopWatch> {
   void _continueTime(){
 
     setState(() {
-      _stopWatch = Timer.periodic(Duration(seconds: 1), (Timer time) => _startTime());
+      _stopWatch = Timer.periodic(Duration(milliseconds: 10), (Timer time) => _startTime());
       _stopLabel = "PARAR";
       redClr = Colors.red;
     });
@@ -80,13 +85,15 @@ class _StopWatchState extends State<StopWatch> {
       color: Colors.white10,
       child: Column(
         children: [
-          Expanded(
+          Flexible(
+            flex: 3,
             child: Align(
               alignment: Alignment.center,
-              child: timeContainer(min, seg),
+              child: timeContainer(min, sec),
             )
           ),
-          Expanded(
+          Flexible(
+            flex: 1,
             child: Align(
               alignment: Alignment.bottomCenter,
               child: buttonsContainer(_isStarted),
@@ -98,13 +105,12 @@ class _StopWatchState extends State<StopWatch> {
   }
 
   Widget buttonsContainer(bool _isStarted) {
-
     return Container(
       height: 60.0,
       decoration:  BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: Colors.black,
+            color: Colors.black26,
             width: 1.0
           ) 
         ),
@@ -120,7 +126,6 @@ class _StopWatchState extends State<StopWatch> {
   }
 
   Widget textButtonCont() {
-    
     return Container(
       child: Row(
         children: [
@@ -139,7 +144,7 @@ class _StopWatchState extends State<StopWatch> {
         switch(title){
           case 'INICIAR':
             _isStarted = true;
-            _stopWatch = Timer.periodic(Duration(seconds: 1), (Timer time) => _startTime());
+            _stopWatch = Timer.periodic(Duration(milliseconds: 10), (Timer time) => _startTime());
             break;
           case 'PARAR': 
             _stopTime();
@@ -153,19 +158,44 @@ class _StopWatchState extends State<StopWatch> {
       },
       child: Text(
         title,
-        style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.bold, color: btnColor),
+        style: TextStyle(
+          fontSize: 22.0, 
+          fontWeight: FontWeight.w500, 
+          fontFamily: 'Montserrat-SemiBold',
+          color: btnColor
+        ),
       ),
     );
   }
 
-  Widget timeContainer(int min, int seg) {
+  Widget timeContainer(int min, int sec) {
     return Container(
+      width: double.infinity,
+      height: 100.0,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           timeItem(min),
-          Text(":", style: TextStyle(color: Colors.black, fontSize: 60.0, fontWeight: FontWeight.bold )),
-          timeItem(seg)
+          Text(
+            ":", 
+            style: TextStyle(
+              color: Colors.black87, 
+              fontSize: 65.0, 
+              fontWeight: FontWeight.w300,
+              fontFamily: 'Montserrat-Thin'
+            )
+          ),
+          timeItem(sec),
+          Text(
+            ".", 
+            style: TextStyle(
+              color: Colors.black87, 
+              fontSize: 65.0, 
+              fontWeight: FontWeight.w300,
+              fontFamily: 'Montserrat-Thin'
+            )
+          ),
+          timeItem(milsec)
         ],
       ),
     );
@@ -175,9 +205,11 @@ class _StopWatchState extends State<StopWatch> {
     return Text(
       timeType < 10 ? '0$timeType' : '$timeType',
       style: TextStyle(
-        color: Colors.black, 
-        fontSize: 70.0, 
-        fontWeight: FontWeight.bold
+        color: Colors.black87, 
+        fontSize: 65.0, 
+        fontWeight: FontWeight.w100,
+        letterSpacing: 4.0,
+        fontFamily: 'Montserrat-Thin'
       )
     );
   }
