@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flut_timer/views/count_down.dart';
-import 'package:flut_timer/views/stop_watch.dart';
+import 'package:flut_timer/views/countDown/countDown.dart';
+import 'package:flut_timer/views/stopWatch/stopWatch.dart';
 
 void main() {
   runApp(MyApp());

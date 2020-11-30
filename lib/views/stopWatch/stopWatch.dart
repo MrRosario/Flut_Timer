@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flut_timer/views/stopWatch/stopWatch_bloc.dart';
 
 class StopWatch extends StatefulWidget {
   @override
@@ -7,75 +8,10 @@ class StopWatch extends StatefulWidget {
 }
 
 class _StopWatchState extends State<StopWatch> {
-  Timer _stopWatch;
-  bool _isStarted = false;
-
-  Color redClr = Colors.red;
+  
+  StopWatchBloc bloc = StopWatchBloc();
   Color blackClr = Colors.black;
   Color greenLimeClr = Colors.green;
-
-  String _stopLabel =  "PARAR";
-  
-  int min = 0;
-  int sec = 0;
-  int milsec = 0;
-
-  void _startTime() {
-
-    min %= 60;
-    sec %= 60;
-    milsec %= 100;
-
-    setState(() {
-      milsec++;
-      
-      if(milsec > 99){
-        milsec = 0;
-        sec += 1;
-      }
-
-      if(sec > 59){
-        sec = 0;
-        min += 1;
-      } 
-      
-    });
-  }
-
-  void _restartTime(){
-    _stopWatch.cancel();
-    _isStarted = false;
-    
-    setState(() {
-      min = 0;
-      sec = 0;
-      milsec = 0;
-
-      _stopLabel = "PARAR";
-      redClr = Colors.red;
-
-    });
-  }
-
-  void _stopTime(){
-
-    setState(() {
-      _stopWatch.cancel();
-      _stopLabel = "CONTINUAR";
-      redClr = Colors.green;
-    });
-
-  }
-
-  void _continueTime(){
-
-    setState(() {
-      _stopWatch = Timer.periodic(Duration(milliseconds: 10), (Timer time) => _startTime());
-      _stopLabel = "PARAR";
-      redClr = Colors.red;
-    });
-  
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,23 +19,29 @@ class _StopWatchState extends State<StopWatch> {
       width: double.infinity,
       height: double.infinity,
       color: Colors.white10,
-      child: Column(
-        children: [
-          Flexible(
-            flex: 3,
-            child: Align(
-              alignment: Alignment.center,
-              child: timeContainer(min, sec),
-            )
-          ),
-          Flexible(
-            flex: 1,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: buttonsContainer(_isStarted),
-            )
-          )
-        ],
+      child: StreamBuilder(
+        stream: bloc.output,
+        builder: (context, snapshot){
+          return Column(
+            children: [
+              Flexible(
+                flex: 3,
+                child: Align(
+                  alignment: Alignment.center,
+                  child: timeContainer(bloc.min, bloc.sec),
+                )
+              ),
+              Flexible(
+                flex: 1,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: buttonsContainer(bloc.isStarted),
+                )
+              )
+            ],
+          );
+        }
+
       )
     );
   }
@@ -129,7 +71,7 @@ class _StopWatchState extends State<StopWatch> {
     return Container(
       child: Row(
         children: [
-          textButton(_stopLabel, redClr),
+          textButton(bloc.stopLabel, bloc.redClr),
           textButton("REINICIAR", blackClr)
         ],
       ),
@@ -143,17 +85,17 @@ class _StopWatchState extends State<StopWatch> {
         
         switch(title){
           case 'INICIAR':
-            _isStarted = true;
-            _stopWatch = Timer.periodic(Duration(milliseconds: 10), (Timer time) => _startTime());
+            bloc.isStarted = true;
+            bloc.stopWatch = Timer.periodic(Duration(milliseconds: 10), (Timer time) => bloc.startTime());
             break;
           case 'PARAR': 
-            _stopTime();
+            bloc.stopTime();
             break;
           case 'CONTINUAR': 
-            _continueTime();
+            bloc.continueTime();
             break;  
           case 'REINICIAR':
-            _restartTime(); 
+            bloc.restartTime(); 
         }
       },
       child: Text(
@@ -195,7 +137,7 @@ class _StopWatchState extends State<StopWatch> {
               fontFamily: 'Montserrat-Thin'
             )
           ),
-          timeItem(milsec)
+          timeItem(bloc.milsec)
         ],
       ),
     );
